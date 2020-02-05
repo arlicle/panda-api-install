@@ -10,6 +10,8 @@ fn main() {
     let path = Path::new(&args[0]);
     let path = path.parent().unwrap();
     let current_dir = path.to_str().unwrap().trim_end_matches("/");
+    // 处理空格路径
+    let current_dir = current_dir.replace(" ", r"\ ");
 
     // 获取home目录
     let home_dir = dirs::home_dir().unwrap();
@@ -59,6 +61,7 @@ fn main() {
                 .arg(&cp_command)
                 .output()
                 .expect(&format!("failed to cp file {} to {}", file, &panda_dir_string));
+            println!("r {:?}", r);
         };
     }
 
@@ -126,5 +129,5 @@ fn main() {
     }
 
 
-    println!("Congratulations!\nPanda api install done!\nYou can run pana in your api docs folder now.");
+    println!("Congratulations!\nPanda api install done!\nYou can run pana command in your api docs folder now.");
 }
