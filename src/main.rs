@@ -11,7 +11,7 @@ fn main() {
     let path = path.parent().unwrap();
     let current_dir = path.to_str().unwrap().trim_end_matches("/");
     // 处理空格路径
-    let current_dir = current_dir.replace(" ", r"\ ");
+    let current_dir = fix_filepath(current_dir.to_string());
 
     // 获取home目录
     let home_dir = dirs::home_dir().unwrap();
@@ -36,7 +36,7 @@ fn main() {
     let profile_filepath = Path::new(&profile_filepath_string);
 
     // 判断是否已有安装目录
-    let panda_dir_string = format!("{}/.panda_api/", home_dir);
+    let panda_dir_string = fix_filepath(format!("{}/.panda_api/", home_dir));
     let panda_dir = Path::new(&panda_dir_string);
     if !panda_dir.exists() {
         // 如果文件夹不存在，创建文件夹
@@ -50,6 +50,15 @@ fn main() {
 
     let install_files = ["panda", "theme"];
     for file in &install_files {
+
+        let del_command = format!("rm -rf {}{}", &panda_dir_string, file);
+        let r = Command::new("sh")
+            .arg("-c")
+            .arg(&del_command)
+            .output()
+            .expect(&format!("failed to delete file {}{}", &panda_dir_string, file));
+        println!("r {:?}", r);
+
         // 复制命令到文件夹下
         let cp_command = format!("cp -rf {}/{} {}", current_dir, file, &panda_dir_string);
         if cfg!(target_os = "windows") {
@@ -130,4 +139,10 @@ fn main() {
 
 
     println!("Congratulations!\nPanda api install done!\nYou can run pana command in your api docs folder now.");
+}
+
+
+
+fn fix_filepath(filepath:String) -> String {
+    filepath.replace("(", r"\(").replace(")", r"\)").replace(" ", r"\ ")
 }
