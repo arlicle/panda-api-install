@@ -64,9 +64,9 @@ fn main() {
         let c= format!(r#"setx PATH \"%PATH%;{}""#, panda_dir_string);
         println!("c is {}", c);
         let r = Command::new("cmd")
-//            .env("PATH", r"C:\Windows")
-//            .env("PATH", r"C:\Windows\System32")
-//            .arg(&c)
+            .env("PATH", r"C:\Windows")
+            .env("PATH", r"C:\Windows\System32")
+            .arg(&c)
             .arg("echo hello")
             .output();
         println!("set path {:?}", r);
