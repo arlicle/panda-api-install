@@ -28,27 +28,6 @@ fn main() {
     let home_dir = dirs::home_dir().unwrap();
     let home_dir = home_dir.to_str().unwrap().trim_end_matches("/");
 
-    // 获取使用的是哪种shell
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg("echo $SHELL")
-        .output()
-        .expect("failed to execute process");
-
-    let shell_name = String::from_utf8(output.stdout).unwrap();
-    let shell_name = shell_name
-        .trim()
-        .trim_start_matches("/")
-        .trim_start_matches("/");
-    let mut profile_name = "".to_string();
-    let shell_name_info: Vec<&str> = shell_name.split("/").collect();
-    if let Some(shell_name) = shell_name_info.last() {
-        profile_name = format!(".{}rc", shell_name);
-    }
-
-    let profile_filepath_string = format!("{}/{}", home_dir, profile_name);
-    let profile_filepath = Path::new(&profile_filepath_string);
-
     // 判断是否已有安装目录
     let panda_dir_string = fix_filepath(format!("{}/.panda_api/", home_dir));
     let panda_dir = Path::new(&panda_dir_string);
@@ -77,11 +56,41 @@ fn main() {
     for file in &install_files {
         from_paths.push(format!("{}/{}", current_dir, file));
     }
-    println!("paths: {:?}", from_paths);
     let r = copy_items(&from_paths, &panda_dir_string, &options);
     println!("r is {:?}", r);
 
-    if !cfg!(target_os = "windows") {
+    if cfg!(target_os = "windows") {
+        // 增加windows环境变量
+        let c= format!(r#"setx PATH \"%PATH%;{}""#, panda_dir_string);
+        println!("c is {}", c);
+        let r = Command::new("cmd")
+            .env("PATH", r"C:\Windows")
+            .env("PATH", r"C:\Windows\System32")
+            .arg(&c)
+            .output();
+        println!("set path {:?}", r);
+    } else {
+        // 获取使用的是哪种shell
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg("echo $SHELL")
+            .output()
+            .expect("failed to execute process");
+
+        let shell_name = String::from_utf8(output.stdout).unwrap();
+        let shell_name = shell_name
+            .trim()
+            .trim_start_matches("/")
+            .trim_start_matches("/");
+        let mut profile_name = "".to_string();
+        let shell_name_info: Vec<&str> = shell_name.split("/").collect();
+        if let Some(shell_name) = shell_name_info.last() {
+            profile_name = format!(".{}rc", shell_name);
+        }
+
+        let profile_filepath_string = format!("{}/{}", home_dir, profile_name);
+        let profile_filepath = Path::new(&profile_filepath_string);
+
         let profile_content = r#"export PATH="$HOME/.panda_api:$PATH""#;
         // 编辑profile文件
         let mut has_profile_content = false;
