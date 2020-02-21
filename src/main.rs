@@ -69,6 +69,10 @@ fn main() {
             .arg(&c)
             .output();
         println!("set path {:?}", r);
+        if let Ok(output) = r {
+            let hello = output.stdout;
+            println!("Hello {:?}", hello);
+        }
     } else {
         // 获取使用的是哪种shell
         let output = Command::new("sh")
