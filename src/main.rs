@@ -71,7 +71,7 @@ fn main() {
         println!("set path {:?}", r);
         if let Ok(output) = r {
             let hello = output.stdout;
-            println!("Hello {:?}", hello);
+            println!("Hello {:?}", std::str::from_utf8(&hello));
         }
     } else {
         // 获取使用的是哪种shell
