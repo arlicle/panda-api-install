@@ -66,7 +66,7 @@ fn main() {
         let r = Command::new("cmd")
             .env("PATH", r"C:\Windows")
             .env("PATH", r"C:\Windows\System32")
-            .arg(&c)
+            .env("PATH", panda_dir_string)
             .arg("echo hello")
             .output();
         println!("set path {:?}", r);
