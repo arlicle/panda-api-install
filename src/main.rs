@@ -8,21 +8,11 @@ use fs_extra::{copy_items, remove_items};
 
 fn main() {
     // 获取当前目录
-    let args: Vec<String> = std::env::args().collect();
-
     let current_exe = &std::env::current_exe().unwrap();
     let current_exe = Path::new(current_exe);
 
     let path = current_exe.parent().unwrap();
     let current_dir = path.to_str().unwrap();
-
-    //    // 处理空格路径
-    //    let current_dir = fix_filepath(current_dir.to_string());
-    //    println!("{:?}", std::env::current_exe());
-    //    let path = std::env::current_dir().unwrap();
-    //    println!("The current directory is {}", path.display());
-    //    let current_dir = path.to_str().unwrap().trim_end_matches("/");
-    println!("The current_dir is {}", current_dir);
 
     // 获取home目录
     let home_dir = dirs::home_dir().unwrap();
@@ -57,23 +47,9 @@ fn main() {
         from_paths.push(format!("{}/{}", current_dir, file));
     }
     let r = copy_items(&from_paths, &panda_dir_string, &options);
-    println!("r is {:?}", r);
 
     if cfg!(target_os = "windows") {
         // 增加windows环境变量
-        let c= format!(r#"setx PATH \"%PATH%;{}""#, panda_dir_string);
-        println!("c is {}", c);
-        let r = Command::new("cmd")
-            .env("PATH", r"C:\Windows")
-            .env("PATH", r"C:\Windows\System32")
-            .env("PATH", panda_dir_string)
-            .arg("echo hello")
-            .output();
-        println!("set path {:?}", r);
-        if let Ok(output) = r {
-            let hello = output.stdout;
-            println!("Hello {:?}", std::str::from_utf8(&hello));
-        }
     } else {
         // 获取使用的是哪种shell
         let output = Command::new("sh")
