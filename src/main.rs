@@ -66,7 +66,7 @@ fn main() {
         let r = Command::new("cmd")
             .env("PATH", r"C:\Windows")
             .env("PATH", r"C:\Windows\System32")
-            .arg(&c)
+//            .arg(&c)
             .output();
         println!("set path {:?}", r);
         if let Ok(output) = r {
