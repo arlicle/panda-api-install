@@ -6,7 +6,24 @@ use std::process::Command;
 use fs_extra::dir::{self, copy};
 use fs_extra::{copy_items, remove_items};
 
+#[cfg(windows)]
+use winreg::enums::*;
+#[cfg(windows)]
+use winreg::{self, RegKey};
+
 fn main() {
+    #[cfg(windows)]
+    {
+        println!("Reading some system info...");
+        let hklm = RegKey::predef(HKEY_LOCAL_MACHINE);
+        let cur_ver = hklm.open_subkey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion")?;
+        let pf: String = cur_ver.get_value("ProgramFilesDir")?;
+        let dp: String = cur_ver.get_value("DevicePath")?;
+        println!("ProgramFiles = {}\nDevicePath = {}", pf, dp);
+        let info = cur_ver.query_info()?;
+        println!("info = {:?}", info);
+    }
+
     // 获取当前目录
     let current_exe = &std::env::current_exe().unwrap();
     let current_exe = Path::new(current_exe);
