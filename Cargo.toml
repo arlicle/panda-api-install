@@ -9,3 +9,9 @@ edition = "2018"
 [dependencies]
 dirs = "2.0.2"
 fs_extra = "1.1.0"
+
+[target.'cfg(windows)'.dependencies]
+winapi = "0.3.8"
+winreg = "0.6.2"
+
+
