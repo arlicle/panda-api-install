@@ -44,7 +44,7 @@ fn main() {
     };
     let mut from_paths: Vec<String> = Vec::new();
     for file in &install_files {
-        from_paths.push(format!("{}/{}", current_dir, file));
+        from_paths.push(format!("{}/Contents/{}", current_dir, file));
     }
     let r = copy_items(&from_paths, &panda_dir_string, &options);
 
