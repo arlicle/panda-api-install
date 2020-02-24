@@ -64,7 +64,7 @@ fn main() {
             println!("Copy files done.");
         }
         Err(e) => {
-            print_message("Copy files failed, install failed");
+            log::error!("Copy files failed, install failed");
             return;
         }
     }
@@ -112,8 +112,7 @@ fn main() {
             } else {
                 "".to_string()
             };
-            println!("user_envs {:?}", user_envs);
-            print_message(success_msg).unwrap();
+            log::info!("{}", success_msg);
         }
     } else {
         // 获取使用的是哪种shell
@@ -208,8 +207,8 @@ fn main() {
             }
         }
     }
+    log::info!("{}", success_msg);
 
-    print_message(success_msg);
 }
 
 fn fix_filepath(filepath: String) -> String {
@@ -217,25 +216,4 @@ fn fix_filepath(filepath: String) -> String {
         .replace("(", r"\(")
         .replace(")", r"\)")
         .replace(" ", r"\ ")
-}
-
-#[cfg(windows)]
-fn print_message(msg: &str) -> Result<i32, Error> {
-    use std::ffi::OsStr;
-    use std::iter::once;
-    use std::os::windows::ffi::OsStrExt;
-    use std::ptr::null_mut;
-    use winapi::um::winuser::{MB_OK, MessageBoxW};
-    let wide: Vec<u16> = OsStr::new(msg).encode_wide().chain(once(0)).collect();
-    let ret = unsafe {
-        MessageBoxW(null_mut(), wide.as_ptr(), wide.as_ptr(), MB_OK)
-    };
-    if ret == 0 { Err(Error::last_os_error()) }
-    else { Ok(ret) }
-}
-
-#[cfg(not(windows))]
-fn print_message(msg: &str) -> Result<(), Error> {
-    println!("{}", msg);
-    Ok(())
 }
