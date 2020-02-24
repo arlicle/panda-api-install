@@ -12,19 +12,6 @@ use winreg::enums::*;
 use winreg::{self, RegKey};
 
 fn main() {
-    #[cfg(windows)]
-    {
-        println!("Reading some system info...");
-        let hklm = RegKey::predef(HKEY_CURRENT_USER);
-        let cur_ver = hklm.open_subkey(r"Environment").unwrap();
-        let pf: String = cur_ver.get_value("Path").unwrap();
-//        let dp: String = cur_ver.get_value("DevicePath").unwrap();
-//        println!("ProgramFiles = {}\nDevicePath = {}", pf, dp);
-        println!("pf {}", pf);
-        let info = cur_ver.query_info().unwrap();
-        println!("info = {:?}", info);
-    }
-
     // 获取当前目录
     let current_exe = &std::env::current_exe().unwrap();
     let current_exe = Path::new(current_exe);
@@ -68,6 +55,31 @@ fn main() {
 
     if cfg!(target_os = "windows") {
         // 增加windows环境变量
+        #[cfg(windows)]
+        {
+            println!("Reading some system info...");
+            let hklm = RegKey::predef(HKEY_CURRENT_USER);
+            let cur_ver = hklm.open_subkey(r"Environment").unwrap();
+            let user_envs: String = if let Some(p) = cur_ver.get_value("Path") {
+                p
+            } else {
+                "".to_string()
+            };
+
+            let mut user_envs = user_envs.trim().trim_end_matches(";");
+            if user_envs.contains(&panda_dir_string) {
+                println!("已经存在这个环境变量了");
+            } else {
+                println!("还没有存在这个环境变量");
+                let s = format!("{};{};", user_envs, panda_dir_string);
+                println!("s {}", s);
+                cur_ver.set_value("Path", s);
+            }
+
+            //        let dp: String = cur_ver.get_value("DevicePath").unwrap();
+            //        println!("ProgramFiles = {}\nDevicePath = {}", pf, dp);
+            println!("user_envs {}", user_envs);
+        }
     } else {
         // 获取使用的是哪种shell
         let output = Command::new("sh")
