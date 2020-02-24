@@ -19,12 +19,18 @@ fn main() {
     let path = current_exe.parent().unwrap();
     let current_dir = path.to_str().unwrap();
 
+    let split_s = if cfg!(target_os = "windows") {
+        r"\"
+    } else {
+        "/"
+    };
+
     // 获取home目录
     let home_dir = dirs::home_dir().unwrap();
-    let home_dir = home_dir.to_str().unwrap().trim_end_matches("/");
+    let home_dir = home_dir.to_str().unwrap().trim_end_matches(split_s);
 
     // 判断是否已有安装目录
-    let panda_dir_string = fix_filepath(format!("{}/.panda_api/", home_dir));
+    let panda_dir_string = fix_filepath(format!("{1}{0}.panda_api{0}", split_s, home_dir));
     let panda_dir = Path::new(&panda_dir_string);
     if panda_dir.exists() {
         // 如果文件夹存在，删除重装
@@ -49,7 +55,7 @@ fn main() {
     };
     let mut from_paths: Vec<String> = Vec::new();
     for file in &install_files {
-        from_paths.push(format!("{}/Contents/{}", current_dir, file));
+        from_paths.push(format!("{1}{0}Contents{0}{2}", split_s, current_dir, file));
     }
     let r = copy_items(&from_paths, &panda_dir_string, &options);
 
@@ -73,14 +79,14 @@ fn main() {
                 println!("还没有存在这个环境变量");
                 let s = format!("{};{};", user_envs, panda_dir_string);
                 println!("s {}", s);
-               match cur_ver.set_value("Path", &s) {
-                   Ok(r) => {
-                       println!("reg ok");
-                   },
-                   Err(e) => {
-                       println!("reg failed");
-                   }
-               }
+                match cur_ver.set_value("Path", &s) {
+                    Ok(r) => {
+                        println!("reg ok");
+                    }
+                    Err(e) => {
+                        println!("reg failed");
+                    }
+                }
             }
 
             //        let dp: String = cur_ver.get_value("DevicePath").unwrap();
