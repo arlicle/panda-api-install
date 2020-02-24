@@ -14,6 +14,8 @@ use winreg::enums::*;
 use winreg::{self, RegKey};
 
 fn main() {
+    pretty_env_logger::init();
+
     // 获取当前目录
     let current_exe = &std::env::current_exe().unwrap();
     let current_exe = Path::new(current_exe);
@@ -70,6 +72,7 @@ fn main() {
         }
         Err(e) => {
             println!("Copy files failed, install failed");
+            log::error!("Copy files failed, install failed");
             return;
         }
     }
