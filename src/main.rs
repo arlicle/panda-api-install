@@ -106,6 +106,13 @@ fn main() {
                     }
                 }
             }
+
+            let user_envs: String = if let Ok(p) = cur_ver.get_value("Path") {
+                p
+            } else {
+                "".to_string()
+            };
+            println!("user_envs {:?}", user_envs);
             print_message(success_msg).unwrap();
         }
     } else {
