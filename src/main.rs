@@ -73,7 +73,14 @@ fn main() {
                 println!("还没有存在这个环境变量");
                 let s = format!("{};{};", user_envs, panda_dir_string);
                 println!("s {}", s);
-                cur_ver.set_value("Path", s);
+               match cur_ver.set_value("Path", &s) {
+                   Ok(r) => {
+                       println!("reg ok");
+                   },
+                   Err(e) => {
+                       println!("reg failed");
+                   }
+               }
             }
 
             //        let dp: String = cur_ver.get_value("DevicePath").unwrap();
