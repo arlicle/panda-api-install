@@ -32,7 +32,12 @@ fn main() {
     let home_dir = home_dir.to_str().unwrap().trim_end_matches(split_s);
     println!("home_dir {}", home_dir);
     // 判断是否已有安装目录
-    let panda_dir_string = fix_filepath(format!("{1}{0}.panda_api{0}", split_s, home_dir));
+    let mut panda_dir_string = format!("{1}{0}.panda_api{0}", split_s, home_dir);
+
+    if !cfg!(target_os = "windows") {
+        panda_dir_string = fix_filepath(panda_dir_string);
+    }
+    
     let panda_dir = Path::new(&panda_dir_string);
     if panda_dir.exists() {
         // 如果文件夹存在，删除重装
@@ -61,7 +66,7 @@ fn main() {
     for file in &install_files {
         from_paths.push(format!("{1}{0}Contents{0}{2}", split_s, current_dir, file));
     }
-    match copy_items(&from_paths, &fix_filepath(panda_dir_string), &options) {
+    match copy_items(&from_paths, &panda_dir_string, &options) {
         Ok(r) => {
             println!("Copy files done.");
         }
