@@ -35,11 +35,8 @@ fn main() {
     // 判断是否已有安装目录
     let mut panda_dir_string = format!("{1}{0}.panda_api{0}", split_s, home_dir);
 
-    if !cfg!(target_os = "windows") {
-        panda_dir_string = fix_filepath(panda_dir_string);
-    }
-
     let panda_dir = Path::new(&panda_dir_string);
+    let panda_dir_string = panda_dir.to_str().unwrap();
     if panda_dir.exists() {
         // 如果文件夹存在，删除重装
         let mut from_paths = vec![&panda_dir_string];
