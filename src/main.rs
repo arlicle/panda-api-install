@@ -1,5 +1,5 @@
 use std::fs::{self, DirEntry, File, OpenOptions};
-use std::io::{BufReader, Read, Write};
+use std::io::{self, BufReader, Read, Write};
 use std::path::Path;
 use std::process::Command;
 
@@ -57,15 +57,27 @@ fn main() {
     for file in &install_files {
         from_paths.push(format!("{1}{0}Contents{0}{2}", split_s, current_dir, file));
     }
-    let r = copy_items(&from_paths, &panda_dir_string, &options);
+    match copy_items(&from_paths, &panda_dir_string, &options) {
+        Ok(r) => {
+            println!("Copy file done.");
+        }
+        Err(e) => {
+            log::error!("Copy file failed, install failed");
+            return;
+        }
+    }
 
     if cfg!(target_os = "windows") {
         // 增加windows环境变量
         #[cfg(windows)]
         {
-            println!("Reading some system info...");
             let hklm = RegKey::predef(HKEY_CURRENT_USER);
-            let cur_ver = hklm.open_subkey("Environment").unwrap();
+            let cur_ver = hklm.open_subkey("Environment").unwrap_or_else(|e| match e.kind() {
+                io::ErrorKind::NotFound => panic!("Key doesn't exist"),
+                io::ErrorKind::PermissionDenied => panic!("Access denied"),
+                _ => panic!("{:?}", e),
+            });
+
             let (reg_key, disp) = hklm.create_subkey("Environment").unwrap();
 
             let user_envs: String = if let Ok(p) = cur_ver.get_value("Path") {
@@ -77,11 +89,10 @@ fn main() {
             let mut user_envs = user_envs.trim().trim_end_matches(";");
             let panda_dir_string = panda_dir_string.trim_end_matches(split_s);
             if user_envs.contains(panda_dir_string) {
-                println!("已经存在这个环境变量了");
+//                println!("已经存在这个环境变量了");
             } else {
-                println!("还没有存在这个环境变量");
+//                println!("还没有存在这个环境变量");
                 let s = format!("{};{};", user_envs, panda_dir_string);
-                println!("s {}", s);
                 match reg_key.set_value("Path", &s) {
                     Ok(r) => {
                         println!("reg ok");
@@ -92,9 +103,6 @@ fn main() {
                 }
             }
 
-            //        let dp: String = cur_ver.get_value("DevicePath").unwrap();
-            //        println!("ProgramFiles = {}\nDevicePath = {}", pf, dp);
-            println!("user_envs {}", user_envs);
         }
     } else {
         // 获取使用的是哪种shell
