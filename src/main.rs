@@ -65,7 +65,6 @@ fn main() {
         }
         Err(e) => {
             log::error!("Copy file failed, install failed");
-            return;
         }
     }
 
@@ -73,6 +72,8 @@ fn main() {
         // 增加windows环境变量
         #[cfg(windows)]
         {
+            print_message("Hello, world!").unwrap();
+
             let hklm = RegKey::predef(HKEY_CURRENT_USER);
             let cur_ver = hklm.open_subkey("Environment").unwrap_or_else(|e| match e.kind() {
                 io::ErrorKind::NotFound => panic!("Key doesn't exist"),
