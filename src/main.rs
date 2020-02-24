@@ -106,8 +106,6 @@ fn main() {
                     }
                 }
             }
-            println!("{}", success_msg);
-
         }
     } else {
         // 获取使用的是哪种shell
