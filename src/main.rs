@@ -65,7 +65,9 @@ fn main() {
         {
             println!("Reading some system info...");
             let hklm = RegKey::predef(HKEY_CURRENT_USER);
-            let cur_ver = hklm.open_subkey(r"Environment").unwrap();
+            let cur_ver = hklm.open_subkey("Environment").unwrap();
+            let (reg_key, disp) = hklm.create_subkey("Environment").unwrap();
+
             let user_envs: String = if let Ok(p) = cur_ver.get_value("Path") {
                 p
             } else {
@@ -73,13 +75,14 @@ fn main() {
             };
 
             let mut user_envs = user_envs.trim().trim_end_matches(";");
-            if user_envs.contains(&panda_dir_string) {
+            let panda_dir_string = panda_dir_string.trim_end_matches(split_s);
+            if user_envs.contains(panda_dir_string) {
                 println!("已经存在这个环境变量了");
             } else {
                 println!("还没有存在这个环境变量");
                 let s = format!("{};{};", user_envs, panda_dir_string);
                 println!("s {}", s);
-                match cur_ver.set_value("Path", &s) {
+                match reg_key.set_value("Path", &s) {
                     Ok(r) => {
                         println!("reg ok");
                     }
