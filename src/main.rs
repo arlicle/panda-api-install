@@ -69,12 +69,12 @@ fn main() {
         }
     }
 
+    let success_msg = "Congratulations!\nPanda api install done!\nYou can run pana command in your api docs folder now.";
+
     if cfg!(target_os = "windows") {
         // 增加windows环境变量
         #[cfg(windows)]
         {
-            print_message("Hello, world!").unwrap();
-
             let hklm = RegKey::predef(HKEY_CURRENT_USER);
             let cur_ver = hklm.open_subkey("Environment").unwrap_or_else(|e| match e.kind() {
                 io::ErrorKind::NotFound => panic!("Key doesn't exist"),
@@ -106,7 +106,7 @@ fn main() {
                     }
                 }
             }
-            print_message("Hello, world!").unwrap();
+            print_message(success_msg).unwrap();
         }
     } else {
         // 获取使用的是哪种shell
@@ -202,7 +202,7 @@ fn main() {
         }
     }
 
-    println!("Congratulations!\nPanda api install done!\nYou can run pana command in your api docs folder now.");
+    print_message(success_msg);
 }
 
 fn fix_filepath(filepath: String) -> String {
