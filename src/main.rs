@@ -60,7 +60,7 @@ fn main() {
             println!("Reading some system info...");
             let hklm = RegKey::predef(HKEY_CURRENT_USER);
             let cur_ver = hklm.open_subkey(r"Environment").unwrap();
-            let user_envs: String = if let Some(p) = cur_ver.get_value("Path") {
+            let user_envs: String = if let Ok(p) = cur_ver.get_value("Path") {
                 p
             } else {
                 "".to_string()
