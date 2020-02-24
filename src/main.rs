@@ -17,9 +17,10 @@ fn main() {
         println!("Reading some system info...");
         let hklm = RegKey::predef(HKEY_CURRENT_USER);
         let cur_ver = hklm.open_subkey(r"Environment").unwrap();
-//        let pf: String = cur_ver.get_value("ProgramFilesDir").unwrap();
+        let pf: String = cur_ver.get_value("Path").unwrap();
 //        let dp: String = cur_ver.get_value("DevicePath").unwrap();
 //        println!("ProgramFiles = {}\nDevicePath = {}", pf, dp);
+        println!("pf {}", pf);
         let info = cur_ver.query_info().unwrap();
         println!("info = {:?}", info);
     }
