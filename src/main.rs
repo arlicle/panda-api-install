@@ -64,7 +64,7 @@ fn main() {
             println!("Copy files done.");
         }
         Err(e) => {
-            log::error!("Copy files failed, install failed");
+            println!("Copy files failed, install failed");
             return;
         }
     }
@@ -106,13 +106,8 @@ fn main() {
                     }
                 }
             }
+            println!("{}", success_msg);
 
-            let user_envs: String = if let Ok(p) = cur_ver.get_value("Path") {
-                p
-            } else {
-                "".to_string()
-            };
-            log::info!("{}", success_msg);
         }
     } else {
         // 获取使用的是哪种shell
@@ -207,7 +202,7 @@ fn main() {
             }
         }
     }
-    log::info!("{}", success_msg);
+    println!("{}", success_msg);
 
 }
 
