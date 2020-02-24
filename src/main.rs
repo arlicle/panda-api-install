@@ -61,10 +61,11 @@ fn main() {
     }
     match copy_items(&from_paths, &panda_dir_string, &options) {
         Ok(r) => {
-            println!("Copy file done.");
+            println!("Copy files done.");
         }
         Err(e) => {
-            log::error!("Copy file failed, install failed");
+            print_message("Copy files failed, install failed");
+            return;
         }
     }
 
@@ -226,3 +227,8 @@ fn print_message(msg: &str) -> Result<i32, Error> {
     else { Ok(ret) }
 }
 
+#[cfg(not(windows))]
+fn print_message(msg: &str) -> Result<(), Error> {
+    println!("{}", msg);
+    Ok(())
+}
