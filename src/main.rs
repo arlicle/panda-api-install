@@ -30,7 +30,7 @@ fn main() {
     // 获取home目录
     let home_dir = dirs::home_dir().unwrap();
     let home_dir = home_dir.to_str().unwrap().trim_end_matches(split_s);
-
+    println!("home_dir {}", home_dir);
     // 判断是否已有安装目录
     let panda_dir_string = fix_filepath(format!("{1}{0}.panda_api{0}", split_s, home_dir));
     let panda_dir = Path::new(&panda_dir_string);
@@ -40,6 +40,8 @@ fn main() {
         let _r = remove_items(&from_paths);
         //        println!("delete r {:?}", r);
     }
+
+    println!("panda_dir_string {}", panda_dir_string);
 
     // 如果文件夹不存在，创建文件夹
     match std::fs::create_dir_all(&panda_dir_string) {
