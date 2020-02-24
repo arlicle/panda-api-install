@@ -11,8 +11,9 @@ dirs = "2.0.2"
 fs_extra = "1.1.0"
 log = "0.4.8"
 
+
 [target.'cfg(windows)'.dependencies]
-winapi = "0.3.8"
+winapi = { version = "0.3.8", features = ["winuser"] }
 winreg = "0.6.2"
 
 
