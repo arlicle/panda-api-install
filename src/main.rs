@@ -61,7 +61,7 @@ fn main() {
     for file in &install_files {
         from_paths.push(format!("{1}{0}Contents{0}{2}", split_s, current_dir, file));
     }
-    match copy_items(&from_paths, &panda_dir_string, &options) {
+    match copy_items(&from_paths, &fix_filepath(panda_dir_string), &options) {
         Ok(r) => {
             println!("Copy files done.");
         }
